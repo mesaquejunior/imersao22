@@ -41,7 +41,7 @@ func (r *AccountRepository) Save(account *domain.Account) error {
 
 func (r *AccountRepository) FindByAPIKey(apiKey string) (*domain.Account, error) {
 	var account domain.Account
-	var createdAt, updatedAt time.Time
+	var createdAt, updatedAt time.Time = time.Now(), time.Now()
 
 	err := r.db.QueryRow(`
 		SELECT id, name, email, api_key, balance, created_at, updated_at
@@ -68,7 +68,7 @@ func (r *AccountRepository) FindByAPIKey(apiKey string) (*domain.Account, error)
 
 func (r *AccountRepository) FindByID(id string) (*domain.Account, error) {
 	var account domain.Account
-	var createdAt, updatedAt time.Time
+	var createdAt, updatedAt time.Time = time.Now(), time.Now()
 	err := r.db.QueryRow(`
 		SELECT id, name, email, api_key, balance, created_at, updated_at
 		FROM accounts WHERE id = $1
