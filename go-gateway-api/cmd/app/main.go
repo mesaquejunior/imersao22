@@ -11,7 +11,7 @@ import (
 	"github.com/mesaquejunior/imersao22/go-gateway/internal/service"
 	"github.com/mesaquejunior/imersao22/go-gateway/internal/web/server"
 
-	_ "github.com/lib/pq" // PostgreSQL driver
+	_ "github.com/lib/pq"
 )
 
 func getEnv(key string, defaultValue string) string {
@@ -27,7 +27,7 @@ func main() {
 	}
 
 	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
-		getEnv("DB_HOST", "db"),
+		getEnv("DB_HOST", "localhost"),
 		getEnv("DB_PORT", "5432"),
 		getEnv("DB_USER", "postgres"),
 		getEnv("DB_PASSWORD", "postgres"),
@@ -44,9 +44,12 @@ func main() {
 	accountRepository := repository.NewAccountRepository(db)
 	accountService := service.NewAccountService(accountRepository)
 
+	invoiceRepository := repository.NewInvoiceRepository(db)
+	invoiceService := service.NewInvoiceService(invoiceRepository, *accountService)
+
 	port := getEnv("HTTP_PORT", "8080")
 
-	server := server.NewServer(accountService, port)
+	server := server.NewServer(accountService, invoiceService, port)
 	server.ConfigureRoutes()
 
 	log.Println("Starting server on port", port)
